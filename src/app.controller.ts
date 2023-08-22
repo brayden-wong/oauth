@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Inject,
-  Redirect,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Inject, Res, UseGuards } from '@nestjs/common';
 import { GoogleUser } from './google.user.decorator';
 import { GoogleGuard } from './google.guard';
 import { ConfigService } from '@nestjs/config';
