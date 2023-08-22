@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:12.2
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - api-network
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./
+      dockerfile: dockerfile
+      target: development
+    restart: always
+    command: yarn start:dev
+    networks:
+      - api-network
+    env_file:
+      - ./.env
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 8080:8080
+
+networks:
+  api-network:
+    external: false
