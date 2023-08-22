@@ -9,6 +9,8 @@ export type User = {
   emails: string[];
   photos: string[];
   name: string;
+  accessToken: string;
+  refreshToken: string;
 };
 
 @Injectable()
@@ -28,7 +30,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: Profile,
     done: VerifyCallback,
   ) {
-    console.log(accessToken);
     const { emails, photos, id, provider, displayName } = profile;
 
     const photosFromProfile: Array<string> = [];
@@ -46,7 +47,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       emails: emailsFromProfile,
       photos: photosFromProfile,
       name: displayName,
-    };
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    } satisfies User;
 
     done(null, user);
   }

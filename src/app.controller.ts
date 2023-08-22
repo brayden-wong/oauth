@@ -4,6 +4,7 @@ import {
   Inject,
   Redirect,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { GoogleUser } from './google.user.decorator';
@@ -13,6 +14,7 @@ import { Database, InjectDrizzle } from './drizzle.module';
 import { users } from './schema';
 import { User } from './google.strategy';
 import { eq } from 'drizzle-orm';
+import { Response } from 'express';
 
 @Controller()
 export class AppController {
@@ -25,10 +27,9 @@ export class AppController {
   @UseGuards(GoogleGuard)
   googleAuth() {}
 
-  @Redirect('http://localhost:3000', 200)
   @Get('google/callback')
   @UseGuards(GoogleGuard)
-  async googleAuthRedirect(@GoogleUser() user: User) {
+  async googleAuthRedirect(@Res() res: Response, @GoogleUser() user: User) {
     await this.db.transaction(async (tx) => {
       const [exists] = await tx
         .select()
@@ -40,5 +41,11 @@ export class AppController {
 
       return;
     });
+
+    return res
+      .status(200)
+      .redirect(
+        `http://localhost:3000/emails?email=${user.emails[0]}&accessToken=${user.accessToken}&refreshToken=${user.refreshToken}`,
+      );
   }
 }
